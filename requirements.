@@ -36,8 +36,8 @@ elastic-apm==5.8.1
 elasticsearch==7.8.1
 entrypoints==0.3
 faiss-cpu==1.6.3
-farm==0.4.6
--e git+https://github.com/deepset-ai/haystack.git@4eeb7818afcb00bfe23a950541de138d005bab6e#egg=farm_haystack
+farm==0.4.8
+farm-haystack @ git+https://github.com/deepset-ai/haystack.git@4e46d9d1761e3b034a37e877836e3c8a8ceae68a
 fastapi==0.61.0
 filelock==3.0.12
 flake8==3.8.3
@@ -157,14 +157,15 @@ tabulate==0.8.7
 terminado==0.8.3
 testpath==0.4.4
 threadpoolctl==2.1.0
-tokenizers==0.8.1rc1
+tika==1.24
+tokenizers==0.8.1rc2
 toml @ file:///tmp/build/80754af9/toml_1592853716807/work
 torch==1.5.1
 tornado==6.0.4
 tox==3.19.0
 tqdm==4.48.2
 traitlets==4.3.3
-transformers==3.0.2
+transformers==3.1.0
 ujson==1.35
 urllib3==1.25.10
 uvicorn==0.11.8
