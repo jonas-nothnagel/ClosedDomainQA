@@ -14,7 +14,7 @@ from sentence_transformers import SentenceTransformer, util
 import streamlit as st
 import SessionState
 from load_css import local_css
-local_css("style.css")
+local_css("./streamlit/style.css")
 
 DEFAULT = '< PICK A VALUE >'
 def selectbox_with_default(text, values, default=DEFAULT, sidebar=False):
@@ -44,7 +44,7 @@ sys.path.pop(0)
 
 #%%
 #1. load in complete transformed and processed dataset for pre-selection and exploration purpose
-df = pd.read_csv('../data/taxonomy_final.csv')
+df = pd.read_csv('./data/taxonomy_final.csv')
 df_columns = df.drop(columns=['PIMS_ID', 'all_text_clean', 'all_text_clean_spacy',  'hyperlink',
  'title',
  'leading_country',
@@ -54,7 +54,7 @@ df_columns = df.drop(columns=['PIMS_ID', 'all_text_clean', 'all_text_clean_spacy
  'lat'])
     
 #2 load corpus embeddings for neural QA:
-corpus_embeddings = pickle.load(open("../data/splitted_corpus_embeddings.pkl", 'rb'))
+corpus_embeddings = pickle.load(open("./data/splitted_corpus_embeddings.pkl", 'rb'))
 
 #%%
 session = SessionState.get(run_id=0)
@@ -63,7 +63,7 @@ session = SessionState.get(run_id=0)
 #title start page
 st.title('Machine Learning for Nature Climate Energy Portfolio')
 
-sdg = Image.open('logo.png')
+sdg = Image.open('./streamlit/logo.png')
 st.sidebar.image(sdg, width=200)
 st.sidebar.title('Settings')
 
