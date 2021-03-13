@@ -22,7 +22,7 @@ streamlit run main.py
 # Neural Question Answering:
 Ask open Question to the project documents using a Neural QA pipeline powered by sentence transformers to build corpus embeddings and ranking of paragraphs. For retrieval a pre-trained transformer model for extractive QA is applied. Highlighted in html.
 
-[![QA](https://github.com/jonas-nothnagel/NLP-Project-Documents/blob/main/img/neural_qa.png)](#features)
+[![QA](https://github.com/jonas-nothnagel/ClosedDomainQA/blob/master/img/neural_qa.gif)](#features)
 
 # Upcoming
 * Telegram Chatbot Implementation.
