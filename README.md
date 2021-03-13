@@ -3,7 +3,7 @@ Ask open Question to the project documents using a Neural QA pipeline powered by
 
 [![QA](https://github.com/jonas-nothnagel/ClosedDomainQA/blob/master/img/neural_qa.gif)](#features)
 
-Try the App: [I'm an inline-style link](https://share.streamlit.io/jonas-nothnagel/closeddomainqa/streamlit/main.py)!
+Try the App: [Streamlit](https://share.streamlit.io/jonas-nothnagel/closeddomainqa/streamlit/main.py)!
 # Setup
 
 Please use Python <= 3.7 to ensure working pickle protocol.
