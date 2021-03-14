@@ -149,68 +149,7 @@ passage_id = splitted.PIMS_ID.tolist()
 
 if question != "":
     with st.spinner('Processing all logframes and finding best answers...'):
-<<<<<<< HEAD
         deploy(question)
-=======
-        tokenizer, model, bi_encoder = neuralqa()
-        top_k = returns  # Number of passages we want to retrieve with the bi-encoder
-        question_embedding = bi_encoder.encode(question, convert_to_tensor=True)
-        
-        hits = util.semantic_search(question_embedding, corpus_embeddings, top_k=top_k)
-        hits = hits[0]  
-        
-        #define lists
-        matches = []
-        ids = []
-        scores = []
-        answers = []
-
-        for hit in hits:
-            matches.append(passages[hit['corpus_id']])
-            ids.append(passage_id[hit['corpus_id']])
-            scores.append(hit['score'])
-            
-        for match in matches:
-            inputs = tokenizer.encode_plus(question, match, add_special_tokens=True, return_tensors="pt")
-            input_ids = inputs["input_ids"].tolist()[0]
-
-            text_tokens = tokenizer.convert_ids_to_tokens(input_ids)
-            answer_start_scores, answer_end_scores = model(**inputs)
-
-            answer_start = torch.argmax(answer_start_scores)  # Get the most likely beginning of answer with the argmax of the score
-            answer_end = torch.argmax(answer_end_scores) + 1  # Get the most likely end of answer with the argmax of the score
-
-            answer = tokenizer.convert_tokens_to_string(tokenizer.convert_ids_to_tokens(input_ids[answer_start:answer_end]))
-            
-            answers.append(answer)
-        del tokenizer, model, bi_encoder, question_embedding
-            
-        # generate result df
-        df_results = pd.DataFrame(
-            {'PIMS_ID': ids,
-                'answer': answers,
-                'context': matches,
-                "scores": scores
-            })
-
-        
-        
-        st.header("Retrieved Answers:")
-        for index, row in df_results.iterrows():
-            green = "<span class='highlight turquoise'>"+row['answer']+"<span class='bold'>Answer</span></span>"
-            row['context'] = row['context'].replace(row['answer'], green)
-            row['context'] = "<div>"+row['context']+"</div>"
-            st.markdown(row['context'], unsafe_allow_html=True)
-            st.write("")
-            st.write("Relevance:", round(row['scores'],2), "PIMS_ID:", row['PIMS_ID'])
-            st.write("____________________________________________________________________")
-            
-        df_results.set_index('PIMS_ID', inplace=True)
-        st.header("Summary:")
-        st.table(df_results)
-
-
->>>>>>> 14c97efb2a7eeff95f27cef46e4c242874f446af
                         
 #%%
 st.write('           ')
