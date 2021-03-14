@@ -14,7 +14,7 @@ from sentence_transformers import SentenceTransformer, util
 import streamlit as st
 import SessionState
 from load_css import local_css
-local_css("./streamlit/style.css")
+local_css("../streamlit/style.css")
 
 DEFAULT = '< PICK A VALUE >'
 def selectbox_with_default(text, values, default=DEFAULT, sidebar=False):
@@ -44,7 +44,7 @@ sys.path.pop(0)
 
 #%%
 #1. load in complete transformed and processed dataset for pre-selection and exploration purpose
-df = pd.read_csv('./data/taxonomy_final.csv')
+df = pd.read_csv('../data/taxonomy_final.csv')
 df_columns = df.drop(columns=['PIMS_ID', 'all_text_clean', 'all_text_clean_spacy',  'hyperlink',
  'title',
  'leading_country',
@@ -54,7 +54,7 @@ df_columns = df.drop(columns=['PIMS_ID', 'all_text_clean', 'all_text_clean_spacy
  'lat'])
     
 #2 load corpus embeddings for neural QA:
-corpus_embeddings = pickle.load(open("./data/splitted_corpus_embeddings.pkl", 'rb'))
+corpus_embeddings = pickle.load(open("../data/splitted_corpus_embeddings.pkl", 'rb'))
 
 #%%
 session = SessionState.get(run_id=0)
@@ -63,87 +63,93 @@ session = SessionState.get(run_id=0)
 #title start page
 st.title('Machine Learning for Nature Climate Energy Portfolio')
 
-sdg = Image.open('./streamlit/logo.png')
+sdg = Image.open('../streamlit/logo.png')
 st.sidebar.image(sdg, width=200)
 st.sidebar.title('Settings')
 
 
 st.header("Try Neural Question Answering.")
 returns = st.sidebar.slider('Maximal number of answer suggestions:', 1, 10, 5)
+
+        
+def deploy(question):
+    tokenizer, model, bi_encoder = neuralqa()
+    top_k = returns  # Number of passages we want to retrieve with the bi-encoder
+    question_embedding = bi_encoder.encode(question, convert_to_tensor=True)
+    
+    hits = util.semantic_search(question_embedding, corpus_embeddings, top_k=top_k)
+    hits = hits[0]  
+    
+    #define lists
+    matches = []
+    ids = []
+    scores = []
+    answers = []
+
+    for hit in hits:
+        matches.append(passages[hit['corpus_id']])
+        ids.append(passage_id[hit['corpus_id']])
+        scores.append(hit['score'])
+        
+    for match in matches:
+        inputs = tokenizer.encode_plus(question, match, add_special_tokens=True, return_tensors="pt")
+        input_ids = inputs["input_ids"].tolist()[0]
+
+        text_tokens = tokenizer.convert_ids_to_tokens(input_ids)
+        answer_start_scores, answer_end_scores = model(**inputs)
+
+        answer_start = torch.argmax(answer_start_scores)  # Get the most likely beginning of answer with the argmax of the score
+        answer_end = torch.argmax(answer_end_scores) + 1  # Get the most likely end of answer with the argmax of the score
+
+        answer = tokenizer.convert_tokens_to_string(tokenizer.convert_ids_to_tokens(input_ids[answer_start:answer_end]))
+        
+        answers.append(answer)
+        
+    # generate result df
+    df_results = pd.DataFrame(
+        {'PIMS_ID': ids,
+            'answer': answers,
+            'context': matches,
+            "scores": scores
+        })
+
+    
+    
+    st.header("Retrieved Answers:")
+    for index, row in df_results.iterrows():
+        green = "<span class='highlight turquoise'>"+row['answer']+"<span class='bold'>Answer</span></span>"
+        row['context'] = row['context'].replace(row['answer'], green)
+        row['context'] = "<div>"+row['context']+"</div>"
+        st.markdown(row['context'], unsafe_allow_html=True)
+        st.write("")
+        st.write("Relevance:", round(row['scores'],2), "PIMS_ID:", row['PIMS_ID'])
+        st.write("____________________________________________________________________")
+        
+    df_results.set_index('PIMS_ID', inplace=True)
+    st.header("Summary:")
+    st.table(df_results)
+
+    del tokenizer, model, bi_encoder, question_embedding
+
+question = st.text_input('Type in your question (be as specific as possible):')
+
+
 #        examples=["", 
 #                  "what's the problem with the artibonite river basin?", 
 #                  "what are threads for the machinga and mangochi districts of malawi?",
 #                  "how can we deal with rogue swells?"]
 
 #example = st.selectbox('Examples:', [k for k in examples], format_func=lambda x: 'Select an Example' if x == '' else x)
-        
-question = st.text_input('Type in your question (be as specific as possible):')
+
 
 #load and split dataframe:
 wrapped, splitted = clean.split_at_length(df, 'all_text_clean', 512)
 passages = splitted.text.tolist()
 passage_id = splitted.PIMS_ID.tolist()
 
-#if st.button('Evaluate'):
 if question != "":
     with st.spinner('Processing all logframes and finding best answers...'):
-        tokenizer, model, bi_encoder = neuralqa()
-        top_k = returns  # Number of passages we want to retrieve with the bi-encoder
-        question_embedding = bi_encoder.encode(question, convert_to_tensor=True)
-        
-        hits = util.semantic_search(question_embedding, corpus_embeddings, top_k=top_k)
-        hits = hits[0]  
-        
-        #define lists
-        matches = []
-        ids = []
-        scores = []
-        answers = []
-
-        for hit in hits:
-            matches.append(passages[hit['corpus_id']])
-            ids.append(passage_id[hit['corpus_id']])
-            scores.append(hit['score'])
-            
-        for match in matches:
-            inputs = tokenizer.encode_plus(question, match, add_special_tokens=True, return_tensors="pt")
-            input_ids = inputs["input_ids"].tolist()[0]
-
-            text_tokens = tokenizer.convert_ids_to_tokens(input_ids)
-            answer_start_scores, answer_end_scores = model(**inputs)
-
-            answer_start = torch.argmax(answer_start_scores)  # Get the most likely beginning of answer with the argmax of the score
-            answer_end = torch.argmax(answer_end_scores) + 1  # Get the most likely end of answer with the argmax of the score
-
-            answer = tokenizer.convert_tokens_to_string(tokenizer.convert_ids_to_tokens(input_ids[answer_start:answer_end]))
-            
-            answers.append(answer)
-        
-            
-        # generate result df
-        df_results = pd.DataFrame(
-            {'PIMS_ID': ids,
-                'answer': answers,
-                'context': matches,
-                "scores": scores
-            })
-
-        
-        
-        st.header("Retrieved Answers:")
-        for index, row in df_results.iterrows():
-            green = "<span class='highlight turquoise'>"+row['answer']+"<span class='bold'>Answer</span></span>"
-            row['context'] = row['context'].replace(row['answer'], green)
-            row['context'] = "<div>"+row['context']+"</div>"
-            st.markdown(row['context'], unsafe_allow_html=True)
-            st.write("")
-            st.write("Relevance:", round(row['scores'],2), "PIMS_ID:", row['PIMS_ID'])
-            st.write("____________________________________________________________________")
-            
-        df_results.set_index('PIMS_ID', inplace=True)
-        st.header("Summary:")
-        st.table(df_results)
-                
+        deploy(question)
                         
 #%%
 st.write('           ')
