@@ -44,7 +44,7 @@ sys.path.pop(0)
 
 #%%
 #1. load in complete transformed and processed dataset for pre-selection and exploration purpose
-df = pd.read_csv('../data/taxonomy_final.csv')
+df = pd.read_csv('./data/taxonomy_final.csv')
 df_columns = df.drop(columns=['PIMS_ID', 'all_text_clean', 'all_text_clean_spacy',  'hyperlink',
  'title',
  'leading_country',
