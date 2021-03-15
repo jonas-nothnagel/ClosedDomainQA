@@ -113,8 +113,6 @@ def deploy(question):
             "scores": scores
         })
 
-    
-    
     st.header("Retrieved Answers:")
     for index, row in df_results.iterrows():
         green = "<span class='highlight turquoise'>"+row['answer']+"<span class='bold'>Answer</span></span>"
