@@ -31,6 +31,7 @@ To start the application, navigate to the streamlit folder and simply run:
 streamlit run main.py
 ```
 # Upcoming
+* FAISS Indexing
 * Telegram Chatbot Implementation.
 * Refined Ranking.
 * Refined Extractive QA
