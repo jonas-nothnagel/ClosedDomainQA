@@ -31,6 +31,8 @@ To start the application, navigate to the streamlit folder and simply run:
 streamlit run main.py
 ```
 # Upcoming
+* Add new data source: ArXiv Scraper So we can query specific scientific topics. (DRM).
+* FAISS Indexing
 * Telegram Chatbot Implementation.
 * Refined Ranking.
 * Refined Extractive QA
