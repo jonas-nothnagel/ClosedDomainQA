@@ -26,13 +26,12 @@ pip install -r requirements.txt
 ```
 On the first run, the app will download several transformer models (3-4GB) and will store them on your local system. To start the application, navigate to the streamlit folder and simply run:
 
-To start the application, navigate to the streamlit folder and simply run:
 ```
 streamlit run main.py
 ```
 # Upcoming
-* Add new data source: ArXiv Scraper So we can query specific scientific topics. (DRM).
-* FAISS Indexing
+* Add new data source: ArXiv Scraper So we can query specific scientific topics. (DRM). (Done)
+* FAISS Indexing (50% Done)
 * Telegram Chatbot Implementation.
 * Refined Ranking.
 * Refined Extractive QA
